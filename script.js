@@ -1,5 +1,5 @@
 // Path to the Teachable Machine model folder
-const URL = "./model/";  
+const URL = "./model/";
 let model, webcamElement, maxPredictions;
 
 // Map your Teachable Machine labels to boxes
@@ -16,20 +16,34 @@ const resultElement = document.getElementById("result");
 
 // Start camera when button is clicked
 startButton.addEventListener("click", async () => {
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({ 
-            video: { facingMode: "environment" } // rear camera
-        });
-        webcamElement.srcObject = stream;
+    const constraints = {
+        video: {
+            facingMode: { exact: "environment" }, // try rear camera
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+        }
+    };
 
-        // Wait until the video is loaded
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        webcamElement.srcObject = stream;
         webcamElement.onloadeddata = async () => {
             startButton.style.display = "none"; // hide button
-            await loadModel(); // load the model and start predictions
+            await loadModel();
         };
     } catch(err) {
-        console.error("Camera access denied or failed:", err);
-        alert("Camera access is required to use this app.");
+        console.warn("Rear camera not available, falling back to default camera:", err);
+        try {
+            const fallbackStream = await navigator.mediaDevices.getUserMedia({ video: true });
+            webcamElement.srcObject = fallbackStream;
+            webcamElement.onloadeddata = async () => {
+                startButton.style.display = "none";
+                await loadModel();
+            };
+        } catch(fallbackErr) {
+            console.error("Camera access failed:", fallbackErr);
+            alert("Camera access is required to use this app.");
+        }
     }
 });
 
@@ -52,8 +66,8 @@ async function predict() {
         prediction.sort((a, b) => b.probability - a.probability);
         const best = prediction[0];
 
-        let boxInfo = boxMap[best.className] || "Unknown";
-        resultElement.innerText = `${best.className} → ${boxInfo} (${(best.probability*100).toFixed(1)}%)`;
+        const boxInfo = boxMap[best.className] || "Unknown";
+        resultElement.innerText = `${best.className} → ${boxInfo} (${(best.probability * 100).toFixed(1)}%)`;
     } catch(err) {
         console.error("Prediction error:", err);
     }
