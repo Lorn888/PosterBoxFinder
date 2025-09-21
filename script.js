@@ -1,5 +1,5 @@
 const URL = "./model/";  // model folder path
-let model, webcam, labelContainer, maxPredictions;
+let model, webcamElement, maxPredictions;
 
 // Poster → Box mapping
 const boxMap = {
@@ -8,22 +8,30 @@ const boxMap = {
     "3": "Box 3"
 };
 
-// Load the model and setup webcam
-async function init() {
+webcamElement = document.getElementById("webcam");
+const startButton = document.getElementById("startButton");
+
+startButton.addEventListener("click", async () => {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        webcamElement.srcObject = stream;
+        startButton.style.display = "none"; // hide button after starting
+        await initModel();
+    } catch(err) {
+        console.error("Camera access denied", err);
+        alert("Camera access is required to use this app.");
+    }
+});
+
+// Load Teachable Machine model
+async function initModel() {
     model = await tmImage.load(URL + "model.json", URL + "metadata.json");
     maxPredictions = model.getTotalClasses();
-
-    const webcamElement = document.getElementById("webcam");
-    navigator.mediaDevices.getUserMedia({ video: true })
-        .then((stream) => {
-            webcamElement.srcObject = stream;
-            setInterval(predict, 1000); // predict every second
-        });
+    setInterval(predict, 1000); // run prediction every second
 }
 
 // Run prediction
 async function predict() {
-    const webcamElement = document.getElementById("webcam");
     const prediction = await model.predict(webcamElement);
     prediction.sort((a, b) => b.probability - a.probability);
     const best = prediction[0];
@@ -32,5 +40,3 @@ async function predict() {
     document.getElementById("result").innerText =
         `${best.className} → ${boxInfo} (${(best.probability * 100).toFixed(1)}%)`;
 }
-
-init();
