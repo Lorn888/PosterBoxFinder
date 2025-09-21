@@ -5,10 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Poster Box Finder</title>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; }
+    body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+    h1 { margin-bottom: 10px; }
     video { width: 90%; max-width: 400px; margin-top: 20px; border: 2px solid #444; border-radius: 8px; }
-    h1 { margin-top: 10px; }
-    button { padding: 10px 20px; font-size: 16px; }
+    button { padding: 10px 20px; font-size: 16px; margin-top: 20px; }
+    p { font-size: 18px; margin-top: 20px; }
   </style>
 </head>
 <body>
@@ -17,8 +18,11 @@
   <video id="webcam" autoplay playsinline></video>
   <p id="result">Point at a poster...</p>
 
+  <!-- TensorFlow.js -->
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+  <!-- Teachable Machine image library -->
   <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest"></script>
+  <!-- Your custom script -->
   <script src="script.js"></script>
 </body>
 </html>
