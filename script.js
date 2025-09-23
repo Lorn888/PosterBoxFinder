@@ -3,10 +3,11 @@ const URL = "./model/";
 let model, webcamElement, maxPredictions;
 
 // Map your Teachable Machine labels to boxes
+// Make sure these keys exactly match the labels in your metadata.json
 const boxMap = {
-    "1": "Box 1",
-    "2": "Box 2",
-    "3": "Box 3"
+    "Poster 1": "Box 1",
+    "Poster 2": "Box 2",
+    "Poster 3": "Box 3"
 };
 
 // Get DOM elements
@@ -52,9 +53,12 @@ async function loadModel() {
     try {
         model = await tmImage.load(URL + "model.json", URL + "metadata.json");
         maxPredictions = model.getTotalClasses();
+        console.log("✅ Model loaded successfully!"); // debug line
+        resultElement.innerText = "Model loaded! Point at a poster...";
         setInterval(predict, 1000); // predict every second
     } catch(err) {
         console.error("Failed to load model:", err);
+        resultElement.innerText = "Failed to load model. See console.";
         alert("Failed to load the model. Check console for details.");
     }
 }
