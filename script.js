@@ -5,9 +5,9 @@ let model, webcamElement, maxPredictions;
 // Map your Teachable Machine labels to boxes
 // Make sure these keys exactly match the labels in your metadata.json
 const boxMap = {
-    "Poster 1": "Box 1",
-    "Poster 2": "Box 2",
-    "Poster 3": "Box 3"
+    "1": "Box 1",
+    "2": "Box 2",
+    "3": "Box 3"
 };
 
 // Get DOM elements
